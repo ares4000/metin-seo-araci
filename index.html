@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ücretsiz Metin Temizleyici & SEO Analiz Aracı</title>
+  <meta name="description" content="Metinlerdeki fazla boşlukları temizleyin, URL slug ve meta açıklama üretin, kelime yoğunluğu ve okuma süresini saniyeler içinde ücretsiz hesaplayın." />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-2: #0b1220;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --border: #334155;
+      --success: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.85rem;
+      color: var(--accent);
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .ad-slot {
+      background: var(--card-2);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin: 16px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 230px;
+      background: var(--card-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #082f49;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    button:hover { background: var(--accent-hover); }
+
+    button.secondary {
+      background: #334155;
+      color: var(--text);
+    }
+
+    button.secondary:hover { background: #475569; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-box .num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-box .lbl {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .seo-box {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+
+    .seo-box strong { color: var(--accent); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    .content-section {
+      margin-top: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .content-section h2 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 1.25rem;
+    }
+
+    .content-section h3 {
+      margin-bottom: 6px;
+      font-size: 1.05rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--success);
+      color: #052e16;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Metin Temizleyici & SEO Analiz Aracı</h1>
+      <p>Fazla boşlukları temizleyin, URL slug ve meta açıklama oluşturun, kelime yoğunluğunu anında analiz edin.</p>
+    </header>
+
+    <!-- Reklam Alanı 1 (İleride AdSense kodu buraya eklenecek) -->
+    <div class="ad-slot">Reklam Alanı (728x90 / Esnek Banner)</div>
+
+    <div class="grid">
+      <div class="card">
+        <label for="inputText">Ham Metni Buraya Yapıştır</label>
+        <textarea id="inputText" placeholder="Metninizi buraya yazın veya yapıştırın..."></textarea>
+        <div class="btn-row">
+          <button onclick="analizEt()">Temizle & Analiz Et</button>
+          <button class="secondary" onclick="ornekYukle()">Örnek Metin</button>
+          <button class="secondary" onclick="temizleForm()">Temizle</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label for="cleanOutput">Temizlenmiş Metin Çıktısı</label>
+        <textarea id="cleanOutput" readonly placeholder="Temizlenmiş metin burada görünecek..."></textarea>
+        <div class="btn-row">
+          <button onclick="kopyala('cleanOutput', 'Temiz metin kopyalandı!')">Temiz Metni Kopyala</button>
+          <button class="secondary" onclick="markdownIndir()">Raporu (.md) İndir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="num" id="statWords">0</div>
+        <div class="lbl">Kelime Sayısı</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" id="statSentences">0</div>
+        <div class="lbl">Cümle Sayısı</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" id="statChars">0 / 0</div>
+        <div class="lbl">Karakter (Boşluklu/Sız)</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" id="statRead">0 dk</div>
+        <div class="lbl">Tahmini Okuma</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <label>Otomatik SEO Çıktıları</label>
+        <div class="seo-box">
+          <strong>Önerilen URL Slug:</strong><br />
+          <span id="seoSlug">/icerik-sayfasi</span>
+        </div>
+        <div class="seo-box">
+          <strong>Meta Açıklama (155 karakter):</strong><br />
+          <span id="seoMeta">-</span>
+        </div>
+        <div class="btn-row">
+          <button class="secondary" onclick="metinKopyala(document.getElementById('seoSlug').innerText, 'Slug kopyalandı!')">Slug Kopyala</button>
+          <button class="secondary" onclick="metinKopyala(document.getElementById('seoMeta').innerText, 'Meta açıklama kopyalandı!')">Meta Kopyala</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>En Sık Geçen Kelimeler & Yoğunluk</label>
+        <table>
+          <thead>
+            <tr>
+              <th>Kelime</th>
+              <th>Tekrar</th>
+              <th>Yoğunluk</th>
+            </tr>
+          </thead>
+          <tbody id="keywordTable">
+            <tr><td colspan="3" style="color: var(--muted);">Henüz analiz yapılmadı.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Reklam Alanı 2 -->
+    <div class="ad-slot">Reklam Alanı (Esnek İçerik Altı Banner)</div>
+
+    <!-- SEO & AdSense Onayı İçin Rehber Bölümü -->
+    <section class="content-section">
+      <h2>Bu Araç Nasıl Kullanılır ve Ne İşe Yarar?</h2>
+      <p>
+        İçerik üreticileri, SEO uzmanları ve web geliştiriciler için hazırlanan bu ücretsiz araç; kopyala-yapıştır sırasında oluşan bozuk satır aralarını ve gereksiz boşlukları saniyeler içinde temizler. Tüm işlemler doğrudan kendi tarayıcınızda çalışır; metinleriniz hiçbir sunucuya kaydedilmez.
+      </p>
+
+      <h3>Sıkça Sorulan Sorular (SSS)</h3>
+      <p><strong>1. Girilen metinler sunucuya kaydediliyor mu?</strong><br />
+      Hayır. Tüm metin temizleme ve kelime analizi işlemleri tarayıcınızda (JavaScript ile) yerel olarak çalışır.</p>
+
+      <p><strong>2. İdeal anahtar kelime yoğunluğu kaç olmalıdır?</strong><br />
+      Genellikle ana anahtar kelimenin metin içinde %1 ile %2,5 arasında doğal biçimde geçmesi SEO açısından sağlıklı kabul edilir.</p>
+
+      <h3>Gizlilik Politikası</h3>
+      <p>
+        Bu web aracı kullanıcılarından üyelik veya kişisel veri talep etmez. Girilen metinler tarayıcı belleği dışında saklanmaz. İlerleyen dönemlerde sitede gösterilebilecek üçüncü taraf reklam ağları (örneğin Google AdSense), ilgi alanına dayalı reklam sunumu için çerez kullanabilir.
+      </p>
+    </section>
+  </div>
+
+  <div id="toast" class="toast">Kopyalandı!</div>
+
+  <script>
+    let sonMarkdownRapor = "";
+
+    function metniTemizle(metin) {
+      return metin
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .replace(/\n\s*\n+/g, "\n\n")
+        .replace(/[ \t]+/g, " ")
+        .trim();
+    }
+
+    function slugUret(metin, maxKelime = 7) {
+      const ilkSatir = (metin.split("\n")[0] || "").toLowerCase();
+      const map = {
+        "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u",
+        "ä": "a", "ý": "y", "ň": "n", "ž": "z"
+      };
+      const donusmus = ilkSatir.replace(/[çğıöşüäýňž]/g, m => map[m] || m);
+      const kelimeler = (donusmus.match(/[a-z0-9]+/g) || []).slice(0, maxKelime);
+      return kelimeler.length ? "/" + kelimeler.join("-") : "/icerik-sayfasi";
+    }
+
+    function metaAciklamaUret(temizMetin, maxUzunluk = 155) {
+      const tekSatir = temizMetin.replace(/\s+/g, " ").trim();
+      if (!tekSatir) return "-";
+      if (tekSatir.length <= maxUzunluk) return tekSatir;
+      const kirpilmis = tekSatir.slice(0, maxUzunluk);
+      const sonBosluk = kirpilmis.lastIndexOf(" ");
+      return (sonBosluk > 0 ? kirpilmis.slice(0, sonBosluk) : kirpilmis) + "...";
+    }
+
+    function analizEt() {
+      const ham = document.getElementById("inputText").value;
+      const temiz = metniTemizle(ham);
+      document.getElementById("cleanOutput").value = temiz;
+
+      const kelimeler = temiz.toLowerCase().match(/[\p{L}\p{N}_]+/gu) || [];
+      const cumleler = temiz.split(/[.!?]+/).map(c => c.trim()).filter(Boolean);
+
+      const kelimeSayisi = kelimeler.length;
+      const cumleSayisi = cumleler.length;
+      const bosluklu = temiz.length;
+      const bosluksuz = temiz.replace(/\s/g, "").length;
+      const okumaDk = kelimeSayisi > 0 ? (kelimeSayisi / 200).toFixed(2) : "0";
+
+      document.getElementById("statWords").innerText = kelimeSayisi;
+      document.getElementById("statSentences").innerText = cumleSayisi;
+      document.getElementById("statChars").innerText = `${bosluklu} / ${bosluksuz}`;
+      document.getElementById("statRead").innerText = `${okumaDk} dk`;
+
+      const slug = slugUret(temiz);
+      const meta = metaAciklamaUret(temiz);
+      document.getElementById("seoSlug").innerText = slug;
+      document.getElementById("seoMeta").innerText = meta;
+
+      const sayac = {};
+      kelimeler.filter(k => k.length > 2).forEach(k => {
+        sayac[k] = (sayac[k] || 0) + 1;
+      });
+
+      const sirali = Object.entries(sayac)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      const tbody = document.getElementById("keywordTable");
+      if (!sirali.length) {
+        tbody.innerHTML = `<tr><td colspan="3" style="color: var(--muted);">Yeterli kelime bulunamadı.</td></tr>`;
+      } else {
+        tbody.innerHTML = sirali.map(([kelime, adet]) => {
+          const yuzde = ((adet / kelimeSayisi) * 100).toFixed(2);
+          return `<tr><td><strong>${kelime}</strong></td><td>${adet}</td><td>%${yuzde}</td></tr>`;
+        }).join("");
+      }
+
+      const kelimeMd = sirali.length
+        ? sirali.map(([k, a]) => `- **${k}**: ${a} kez (%${((a / kelimeSayisi) * 100).toFixed(2)})`).join("\n")
+        : "- Yeterli kelime bulunamadı.";
+
+      sonMarkdownRapor =
+`## SEO & Metin Analiz Özeti
+
+- **Önerilen URL Slug:** \`${slug}\`
+- **Meta Açıklama:** ${meta}
+- **Kelime Sayısı:** ${kelimeSayisi}
+- **Cümle Sayısı:** ${cumleSayisi}
+- **Karakter (Boşluklu / Boşluksuz):** ${bosluklu} / ${bosluksuz}
+- **Tahmini Okuma Süresi:** ${okumaDk} dk
+
+### Kelime Sıklığı ve Yoğunluğu
+${kelimeMd}
+
+### Temizlenmiş Metin
+\`\`\`text
+${temiz}
+\`\`\``;
+    }
+
+    function toastGoster(mesaj) {
+      const t = document.getElementById("toast");
+      t.innerText = mesaj;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2000);
+    }
+
+    function kopyala(id, mesaj) {
+      const deger = document.getElementById(id).value;
+      if (!deger) return;
+      metinKopyala(deger, mesaj);
+    }
+
+    function metinKopyala(metin, mesaj) {
+      if (!metin || metin === "-") return;
+      navigator.clipboard.writeText(metin).then(() => toastGoster(mesaj));
+    }
+
+    function markdownIndir() {
+      if (!sonMarkdownRapor) analizEt();
+      if (!sonMarkdownRapor) return;
+      const blob = new Blob([sonMarkdownRapor], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "seo-analiz-raporu.md";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function ornekYukle() {
+      document.getElementById("inputText").value =
+`Ücretsiz Mikro Araçlar ile İnternetten Gelir Elde Etmek
+
+Kod   ve   yapay   zeka   kullanarak   hızlı   web   araçları   geliştirmek   çok   verimlidir.
+
+
+Tek   bir   index.html   dosyası   ile   sunucu   maliyeti   olmadan   yayına   çıkabilir,   SEO   uyumlu   sayfalarla   organik   trafik   çekebilirsiniz!`;
+      analizEt();
+    }
+
+    function temizleForm() {
+      document.getElementById("inputText").value = "";
+      document.getElementById("cleanOutput").value = "";
+      analizEt();
+    }
+  </script>
+</body>
+</html>
